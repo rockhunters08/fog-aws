@@ -33,9 +33,7 @@ module Fog
       class Mock
         def create_security_group(name, description, vpc_id=nil)
           response = Excon::Response.new
-
           vpc_id ||= Fog::AWS::Mock.default_vpc_for(region)
-
           unless self.data[:security_groups][name]
             data = {
               'groupDescription'    => description,
@@ -56,6 +54,10 @@ module Fog
           else
             raise Fog::Compute::AWS::Error.new("InvalidGroup.Duplicate => The security group '#{name}' already exists")
           end
+        end
+
+        def duplicate?(name, vpc_id)
+          data[:security_groups].find{ |sg_name, data| sg_name == name && data['vpcId'] == vpc_id }
         end
       end
     end
